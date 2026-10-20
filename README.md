@@ -54,15 +54,23 @@ bundle exec fastlane screenshots
 
 ## App icon
 
-The icon is an original design (a bold ampersand on a squircle gradient) generated
-reproducibly:
+The icon is an original, **layered Liquid Glass** design authored as an iOS 26
+[Icon Composer](https://developer.apple.com/icon-composer/) package at
+[`Amp/Resources/AppIcon.icon/`](Amp/Resources/AppIcon.icon) — a glass "record" disc
+behind a crisp white ampersand, over a subtle indigo→violet gradient. Icon Composer
+supplies the material (refraction, specular, translucency, shadow); the layer assets
+are flat with hard edges.
+
+Regenerate reproducibly (writes both the `.icon` package and the legacy flattened
+asset-catalog PNG for pre-iOS 26):
 
 ```sh
 python3 tools/make_icon.py
-# writes tools/AppIcon-1024.png — copy into the asset catalog
 ```
 
-Final asset lives at `Amp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`.
+Validate/render on a Mac with `ictool` (bundled inside `Icon Composer.app`) or by
+opening the package in Icon Composer. The flattened fallback lives at
+`Amp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`.
 
 ## Versioning
 

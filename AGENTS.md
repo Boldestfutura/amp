@@ -93,11 +93,13 @@ generated).
 - Liquid Glass mini-player and full Now Playing sheet with `GlassEffectContainer` morph.
 - Demo mode (`-UITestDemoMode 1`) + fastlane snapshot UI tests.
 - **App icon**: layered iOS 26 **Icon Composer** package (`Amp/Resources/AppIcon.icon/`).
-  Regenerate with `python3 tools/make_icon.py` (writes `icon.json` + a flat white
-  ampersand glyph). Liquid Glass styling (specular, shadow, translucency, refractivity)
-  is declared in `icon.json`; assets stay flat. Validate/render on a Mac with `ictool`
-  (inside `Icon Composer.app`, Xcode 26+). The asset-catalog PNG is the pre-iOS 26
-  fallback Xcode derives; `ASSETCATALOG_COMPILER_APPICON_NAME` is already `AppIcon`.
+  Regenerate with `python3 tools/make_icon.py` (writes `icon.json` + flat, hard-edged
+  layer assets: `glyph.png` ampersand, `disc.png` record panel, `ring.png` groove).
+  Liquid Glass styling (refraction, specular, translucency, shadow) is declared in
+  `icon.json`; assets stay flat and crisp — do not bake shadows/highlights/gradients
+  or feather edges. Validate/render on a Mac with `ictool` (inside `Icon Composer.app`,
+  Xcode 26+). The asset-catalog PNG is the pre-iOS 26 fallback Xcode derives;
+  `ASSETCATALOG_COMPILER_APPICON_NAME` is already `AppIcon`.
 
 ## Next steps (suggested)
 

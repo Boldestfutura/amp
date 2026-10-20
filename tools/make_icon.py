@@ -4,15 +4,25 @@
 Outputs:
   Amp/Resources/AppIcon.icon/            a layered Liquid Glass icon package
       icon.json                         declarative document (background fill,
-                                        layers, specializations)
-      Assets/ampersand.png              flat white ampersand glyph layer
+                                        groups/layers, specializations)
+      Assets/glyph.png                  crisp ampersand glyph (front glass layer)
+      Assets/disc.png                   circular "record" panel (back glass layer)
+      Assets/ring.png                   thin concentric ring (record groove)
   Amp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png
                                         flattened legacy fallback render
 
-The artwork is original: an ampersand set in Open Sans ExtraBold (or the best
-available bold face), used as a flat white glyph. Icon Composer supplies all
-Liquid Glass styling (specular, shadow, translucency, refraction), so nothing
-is baked into the assets.
+Design intent (Liquid Glass):
+  Real iOS 26 icons are a small stack of *separate glass pieces* that the system
+  renders with refraction, specular highlights and shadows. A single flat glyph on
+  a flat gradient gives those effects nothing to bite on, so the icon reads as a
+  cheap sticker. This design instead provides:
+
+    background  subtle top-to-bottom gradient (indigo -> violet)
+    group "Record"   a glass disc + ring, slightly inset  -> refraction medium
+    group "Mark"     a bold white ampersand, glass, crisp edges -> focal element
+
+  Assets are flat and unstyled (no baked shadow/highlight/gradient); Icon Composer
+  supplies all material. Edges are hard (no feathering) per Apple's guidance.
 
 No third-party app artwork is used or copied.
 """
@@ -32,12 +42,14 @@ LEGACY_DIR = os.path.join(
     ROOT, "Amp", "Resources", "Assets.xcassets", "AppIcon.appiconset"
 )
 
-# Palette (sRGB 0..1): deep indigo -> vivid violet -> warm magenta.
-BG_TOP = (0.18039, 0.12941, 0.36078)   # 46 34 92
-BG_BOT = (0.73725, 0.29020, 0.54118)   # 188 74 138
-GLYPH_LIGHT = (1.0, 1.0, 1.0)
-GLYPH_DARK = (1.0, 0.45098, 0.36078)
-GLYPH_LIGHT_8 = (255, 255, 255)   # same color, 8-bit, for raster output
+# Palette (sRGB 0..1).
+BG_TOP = (0.16471, 0.11765, 0.32941)   # deep indigo
+BG_BOT = (0.47059, 0.20392, 0.47843)   # violet
+BG_TOP_DARK = (0.09804, 0.07451, 0.21569)
+BG_BOT_DARK = (0.31373, 0.12941, 0.33333)
+
+WHITE = (1.0, 1.0, 1.0)
+WHITE_8 = (255, 255, 255)
 
 FONT_CANDIDATES = [
     "/usr/share/fonts/open-sans/OpenSans-ExtraBold.ttf",
@@ -56,8 +68,16 @@ def find_font():
     raise SystemExit("No suitable bold font found")
 
 
-def glyph_mask(text, target_frac=0.60):
-    """Alpha mask of the glyph, scaled to occupy target_frac of the canvas."""
+def _recenter(mask):
+    """Shift a mask so its ink sits dead-center on the canvas."""
+    b = mask.getbbox()
+    dx = int(round(((W - (b[2] - b[0])) / 2) - b[0]))
+    dy = int(round(((W - (b[3] - b[1])) / 2) - b[1]))
+    return mask.transform((W, W), Image.AFFINE, (1, 0, -dx, 0, 1, -dy))
+
+
+def glyph_mask(text, target_frac=0.52):
+    """Alpha mask of the glyph, scaled so its ink height is target_frac of canvas."""
     font_path = find_font()
     target = int(W * target_frac)
     size = 10
@@ -75,27 +95,53 @@ def glyph_mask(text, target_frac=0.60):
 
     mask = Image.new("L", (W, W), 0)
     ImageDraw.Draw(mask).text(pos, text, font=font, fill=255)
-
-    # Recenter on the actual ink bounds (font metrics are asymmetric).
-    b = mask.getbbox()
-    dx = int(round(((W - (b[2] - b[0])) / 2) - b[0]))
-    dy = int(round(((W - (b[3] - b[1])) / 2) - b[1]))
-    return mask.transform((W, W), Image.AFFINE, (1, 0, -dx, 0, 1, -dy))
+    return _recenter(mask)
 
 
-def flat_glyph(color):
-    """A flat, unstyled glyph in `color` with the mask as its alpha channel."""
-    img = Image.new("RGBA", (W, W), color + (0,))
-    img.putalpha(glyph_mask("&"))
+def _flat_from_mask(mask, color8):
+    """Hard-edged flat color layer using `mask` as alpha (no feathering)."""
+    hard = mask.point(lambda v: 255 if v >= 128 else 0)
+    img = Image.new("RGBA", (W, W), color8 + (0,))
+    img.putalpha(hard)
     return img
+
+
+def disc_mask(diameter_frac=0.74, inner_hole_frac=0.06):
+    """A filled circle with a small center hole (vinyl-record silhouette)."""
+    mask = Image.new("L", (W, W), 0)
+    d = ImageDraw.Draw(mask)
+    r = (W * diameter_frac) / 2
+    c = W / 2
+    d.ellipse([c - r, c - r, c + r, c + r], fill=255)
+    hr = W * inner_hole_frac
+    d.ellipse([c - hr, c - hr, c + hr, c + hr], fill=0)
+    return mask.point(lambda v: 255 if v >= 128 else 0)
+
+
+def ring_mask(diameter_frac=0.60, thickness_frac=0.006):
+    """Thin concentric groove ring."""
+    mask = Image.new("L", (W, W), 0)
+    d = ImageDraw.Draw(mask)
+    r = (W * diameter_frac) / 2
+    t = W * thickness_frac
+    c = W / 2
+    d.ellipse([c - r, c - r, c + r, c + r], outline=255, width=int(t))
+    return mask.point(lambda v: 255 if v >= 128 else 0)
 
 
 def write_icon_package():
     os.makedirs(ASSETS, exist_ok=True)
 
-    flat_glyph(GLYPH_LIGHT_8).resize((S, S), Image.LANCZOS).save(
-        os.path.join(ASSETS, "ampersand.png")
-    )
+    def emit(mask, name, color8=WHITE_8):
+        small = mask.resize((S, S), Image.LANCZOS)
+        hard = small.point(lambda v: 255 if v >= 128 else 0)
+        img = Image.new("RGBA", (S, S), color8 + (0,))
+        img.putalpha(hard)
+        img.save(os.path.join(ASSETS, name))
+
+    emit(glyph_mask("&"), "glyph.png")
+    emit(disc_mask(), "disc.png")
+    emit(ring_mask(), "ring.png")
 
     def srgb(c):
         return "extended-srgb:" + ",".join(f"{v:.5f}" for v in (*c, 1.0))
@@ -103,47 +149,70 @@ def write_icon_package():
     doc = {
         "features": ["refractivity", "specular-location"],
         "fill-specializations": [
-            {
-                "value": {
-                    "linear-gradient": [srgb(BG_TOP), srgb(BG_BOT)],
-                }
-            },
+            {"value": {"linear-gradient": [srgb(BG_TOP), srgb(BG_BOT)]}},
             {
                 "appearance": "dark",
                 "value": {
-                    "linear-gradient": [
-                        srgb((0.11373, 0.08627, 0.24314)),
-                        srgb((0.58824, 0.22353, 0.42745)),
-                    ],
+                    "linear-gradient": [srgb(BG_TOP_DARK), srgb(BG_BOT_DARK)]
                 },
             },
         ],
         "groups": [
             {
-                "name": "Amp Mark",
+                "name": "Record",
+                "layers": [
+                    {
+                        "name": "Disc",
+                        "image-name": "disc.png",
+                        "glass": True,
+                        "opacity": 0.30,
+                        "fill-specializations": [
+                            {"value": {"solid": srgb(WHITE)}},
+                            {"appearance": "dark",
+                             "value": {"solid": srgb(WHITE)}},
+                            {"appearance": "tinted",
+                             "value": {"solid": srgb(WHITE)}},
+                        ],
+                    },
+                    {
+                        "name": "Groove",
+                        "image-name": "ring.png",
+                        "glass": True,
+                        "opacity": 0.55,
+                        "fill-specializations": [
+                            {"value": {"solid": srgb(WHITE)}},
+                            {"appearance": "dark",
+                             "value": {"solid": srgb(WHITE)}},
+                            {"appearance": "tinted",
+                             "value": {"solid": srgb(WHITE)}},
+                        ],
+                    },
+                ],
+                "specular": "inside",
+                "translucency": {"enabled": True, "value": 0.20},
+                "refractivity": {"enabled": True, "depth": 0.6, "strength": 0.6},
+                "shadow": {"kind": "neutral", "opacity": 0.30},
+            },
+            {
+                "name": "Mark",
                 "layers": [
                     {
                         "name": "Ampersand",
-                        "image-name": "ampersand.png",
+                        "image-name": "glyph.png",
                         "glass": True,
                         "fill-specializations": [
-                            {"value": {"solid": srgb(GLYPH_LIGHT)}},
-                            {
-                                "appearance": "dark",
-                                "value": {"solid": srgb(GLYPH_DARK)},
-                            },
-                            {
-                                "appearance": "tinted",
-                                "value": {"solid": srgb(GLYPH_LIGHT)},
-                            },
+                            {"value": {"solid": srgb(WHITE)}},
+                            {"appearance": "dark",
+                             "value": {"solid": srgb(WHITE)}},
+                            {"appearance": "tinted",
+                             "value": {"solid": srgb(WHITE)}},
                         ],
                     }
                 ],
+                "specular": "outside",
+                "translucency": {"enabled": True, "value": 0.10},
                 "shadow": {"kind": "neutral", "opacity": 0.35},
-                "specular": True,
-                "translucency": {"enabled": True, "value": 0.15},
-                "refractivity": {"enabled": True, "depth": 0.5, "strength": 0.5},
-            }
+            },
         ],
         "supported-platforms": {"squares": ["iOS"]},
     }
@@ -154,8 +223,9 @@ def write_icon_package():
 
 
 def write_legacy_png():
-    """Flattened preview for the pre-iOS 26 asset-catalog fallback."""
+    """Flattened preview approximating the Liquid Glass look for the asset catalog."""
     os.makedirs(LEGACY_DIR, exist_ok=True)
+
     base = Image.new("RGBA", (W, W))
     px = base.load()
     for y in range(W):
@@ -166,7 +236,15 @@ def write_legacy_png():
         for x in range(W):
             px[x, y] = (r, g, b, 255)
 
-    base = Image.alpha_composite(base, flat_glyph(GLYPH_LIGHT_8))
+    disc = _flat_from_mask(disc_mask(), WHITE_8)
+    disc.putalpha(disc.split()[3].point(lambda v: int(v * 0.30)))
+    base = Image.alpha_composite(base, disc)
+
+    ring = _flat_from_mask(ring_mask(), WHITE_8)
+    ring.putalpha(ring.split()[3].point(lambda v: int(v * 0.55)))
+    base = Image.alpha_composite(base, ring)
+
+    base = Image.alpha_composite(base, _flat_from_mask(glyph_mask("&"), WHITE_8))
 
     radius = int(W * 0.235)
     mask = Image.new("L", (W, W), 0)
@@ -183,7 +261,7 @@ def write_legacy_png():
 def main():
     write_icon_package()
     write_legacy_png()
-    print("wrote AppIcon.icon/ (icon.json + Assets/ampersand.png)")
+    print("wrote AppIcon.icon/ (icon.json + Assets/{glyph,disc,ring}.png)")
     print("wrote Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
 
 

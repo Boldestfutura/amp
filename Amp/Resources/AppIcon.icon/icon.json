@@ -7,8 +7,8 @@
     {
       "value": {
         "linear-gradient": [
-          "extended-srgb:0.18039,0.12941,0.36078,1.00000",
-          "extended-srgb:0.73725,0.29020,0.54118,1.00000"
+          "extended-srgb:0.16471,0.11765,0.32941,1.00000",
+          "extended-srgb:0.47059,0.20392,0.47843,1.00000"
         ]
       }
     },
@@ -16,20 +16,21 @@
       "appearance": "dark",
       "value": {
         "linear-gradient": [
-          "extended-srgb:0.11373,0.08627,0.24314,1.00000",
-          "extended-srgb:0.58824,0.22353,0.42745,1.00000"
+          "extended-srgb:0.09804,0.07451,0.21569,1.00000",
+          "extended-srgb:0.31373,0.12941,0.33333,1.00000"
         ]
       }
     }
   ],
   "groups": [
     {
-      "name": "Amp Mark",
+      "name": "Record",
       "layers": [
         {
-          "name": "Ampersand",
-          "image-name": "ampersand.png",
+          "name": "Disc",
+          "image-name": "disc.png",
           "glass": true,
+          "opacity": 0.3,
           "fill-specializations": [
             {
               "value": {
@@ -39,7 +40,32 @@
             {
               "appearance": "dark",
               "value": {
-                "solid": "extended-srgb:1.00000,0.45098,0.36078,1.00000"
+                "solid": "extended-srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Groove",
+          "image-name": "ring.png",
+          "glass": true,
+          "opacity": 0.55,
+          "fill-specializations": [
+            {
+              "value": {
+                "solid": "extended-srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "extended-srgb:1.00000,1.00000,1.00000,1.00000"
               }
             },
             {
@@ -51,19 +77,57 @@
           ]
         }
       ],
-      "shadow": {
-        "kind": "neutral",
-        "opacity": 0.35
-      },
-      "specular": true,
+      "specular": "inside",
       "translucency": {
         "enabled": true,
-        "value": 0.15
+        "value": 0.2
       },
       "refractivity": {
         "enabled": true,
-        "depth": 0.5,
-        "strength": 0.5
+        "depth": 0.6,
+        "strength": 0.6
+      },
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.3
+      }
+    },
+    {
+      "name": "Mark",
+      "layers": [
+        {
+          "name": "Ampersand",
+          "image-name": "glyph.png",
+          "glass": true,
+          "fill-specializations": [
+            {
+              "value": {
+                "solid": "extended-srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "extended-srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            }
+          ]
+        }
+      ],
+      "specular": "outside",
+      "translucency": {
+        "enabled": true,
+        "value": 0.1
+      },
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.35
       }
     }
   ],
