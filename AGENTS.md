@@ -49,9 +49,12 @@ Amp/
     NowPlaying/                 # NowPlayingBar (mini), NowPlayingView (full sheet)
     Shared/ArtworkView.swift    # async artwork loader/transcoder
   Resources/DemoData.swift      # deterministic data for previews + screenshots
+  Resources/AppIcon.icon/       # iOS 26 Icon Composer package (layered, Liquid Glass)
+  Resources/Assets.xcassets/    # legacy flattened app icon fallback
 AmpUITests/               # snapshot UI tests (fastlane)
 fastlane/Fastfile               # `fastlane screenshots` lane
 Screenshots/                    # real captures go here (Mac only)
+tools/make_icon.py              # regenerates the icon package + legacy PNG
 ```
 
 ## Build & run (on a Mac)
@@ -89,6 +92,12 @@ generated).
 - Playback: `AVAudioPlayer`, queue, next/previous, repeat (off/all/one), shuffle, seek.
 - Liquid Glass mini-player and full Now Playing sheet with `GlassEffectContainer` morph.
 - Demo mode (`-UITestDemoMode 1`) + fastlane snapshot UI tests.
+- **App icon**: layered iOS 26 **Icon Composer** package (`Amp/Resources/AppIcon.icon/`).
+  Regenerate with `python3 tools/make_icon.py` (writes `icon.json` + a flat white
+  ampersand glyph). Liquid Glass styling (specular, shadow, translucency, refractivity)
+  is declared in `icon.json`; assets stay flat. Validate/render on a Mac with `ictool`
+  (inside `Icon Composer.app`, Xcode 26+). The asset-catalog PNG is the pre-iOS 26
+  fallback Xcode derives; `ASSETCATALOG_COMPILER_APPICON_NAME` is already `AppIcon`.
 
 ## Next steps (suggested)
 

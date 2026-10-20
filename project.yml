@@ -23,6 +23,10 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Amp
+        excludes:
+          - "Resources/AppIcon.icon/**"
+      - path: Amp/Resources/AppIcon.icon
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.boldestfutura.amp
