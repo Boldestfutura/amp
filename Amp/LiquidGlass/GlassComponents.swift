@@ -48,11 +48,15 @@ struct GlassTransportButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        let button = Button(action: action) {
             Image(systemName: systemImage)
                 .font(.system(size: size * 0.42, weight: .semibold))
                 .frame(width: size, height: size)
         }
-        .buttonStyle(prominent ? .glassProminent : .glass)
+        if prominent {
+            button.buttonStyle(.glassProminent)
+        } else {
+            button.buttonStyle(.glass)
+        }
     }
 }

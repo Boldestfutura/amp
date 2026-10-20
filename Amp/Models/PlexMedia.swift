@@ -5,7 +5,38 @@ struct PlexMediaContainer<Element: Codable>: Codable {
     let totalSize: Int?
     let offset: Int?
     let Metadata: [Element]?
-    let MediaContainer: PlexMediaContainer<Element>?
+
+    private enum CodingKeys: String, CodingKey {
+        case size, totalSize, offset, Metadata
+        case mediaContainer = "MediaContainer"
+    }
+
+    init(size: Int? = nil, totalSize: Int? = nil, offset: Int? = nil, Metadata: [Element]? = nil) {
+        self.size = size
+        self.totalSize = totalSize
+        self.offset = offset
+        self.Metadata = Metadata
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let nested = try container.decodeIfPresent(
+            PlexMediaContainer<Element>.self,
+            forKey: .mediaContainer
+        )
+        size = try container.decodeIfPresent(Int.self, forKey: .size) ?? nested?.size
+        totalSize = try container.decodeIfPresent(Int.self, forKey: .totalSize) ?? nested?.totalSize
+        offset = try container.decodeIfPresent(Int.self, forKey: .offset) ?? nested?.offset
+        Metadata = try container.decodeIfPresent([Element].self, forKey: .Metadata) ?? nested?.Metadata
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(size, forKey: .size)
+        try container.encodeIfPresent(totalSize, forKey: .totalSize)
+        try container.encodeIfPresent(offset, forKey: .offset)
+        try container.encodeIfPresent(Metadata, forKey: .Metadata)
+    }
 }
 
 struct PlexArtist: Codable, Identifiable, Hashable {
