@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct PlexGlassApp: App {
+struct AmpApp: App {
     @State private var appModel = AppModel()
 
     var body: some Scene {

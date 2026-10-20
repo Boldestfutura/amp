@@ -23,7 +23,7 @@ struct LoginView: View {
                     .symbolEffect(.pulse)
 
                 VStack(spacing: 8) {
-                    Text("PlexGlass").font(.largeTitle.bold())
+                    Text("Amp").font(.largeTitle.bold())
                     Text("A Liquid Glass music client for your Plex library")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)

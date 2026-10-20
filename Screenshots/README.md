@@ -18,8 +18,8 @@ Output lands in `Screenshots/output/`.
 
 ## Option B — Xcode UI test capture
 
-1. `xcodegen generate && open PlexGlass.xcodeproj`
-2. Run the `PlexGlassUITests` target on an iPhone 17 Pro simulator and an iPad Pro simulator.
+1. `xcodegen generate && open Amp.xcodeproj`
+2. Run the `AmpUITests` target on an iPhone 17 Pro simulator and an iPad Pro simulator.
 3. Use Xcode's "Capture Screenshots" or the simulator's `File > Save Screen`.
 
 ## Suggested shot list

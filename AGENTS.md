@@ -1,11 +1,11 @@
-# AGENTS.md — PlexGlass
+# AGENTS.md — Amp
 
 Handoff notes for AI coding agents (opencode, Claude Code, etc.) working in this repo.
 Read this before making changes.
 
 ## What this is
 
-PlexGlass is a **from-scratch**, native **iOS 26 / iPadOS 26** music client for a user's
+Amp is a **from-scratch**, native **iOS 26 / iPadOS 26** music client for a user's
 own Plex Media Server, written in **SwiftUI** using Apple's native **Liquid Glass** APIs.
 
 **Hard boundary:** do NOT reverse-engineer, decompile, or clone **Plexamp** (or any other
@@ -33,8 +33,8 @@ There is **no fallback** for pre-iOS 26 in this beta. Liquid Glass is iOS 26+ on
 
 ```
 project.yml                     # XcodeGen spec — the source of truth for targets/settings
-PlexGlass/
-  App/PlexGlassApp.swift        # @main, AppModel (owns client/session/player)
+Amp/
+  App/AmpApp.swift        # @main, AppModel (owns client/session/player)
   Models/
     PlexModels.swift            # PlexServer, PlexResource, pin types
     PlexMedia.swift             # Artist/Album/Track/Media/Part + media container
@@ -49,7 +49,7 @@ PlexGlass/
     NowPlaying/                 # NowPlayingBar (mini), NowPlayingView (full sheet)
     Shared/ArtworkView.swift    # async artwork loader/transcoder
   Resources/DemoData.swift      # deterministic data for previews + screenshots
-PlexGlassUITests/               # snapshot UI tests (fastlane)
+AmpUITests/               # snapshot UI tests (fastlane)
 fastlane/Fastfile               # `fastlane screenshots` lane
 Screenshots/                    # real captures go here (Mac only)
 ```
@@ -59,7 +59,7 @@ Screenshots/                    # real captures go here (Mac only)
 ```sh
 brew install xcodegen
 xcodegen generate
-open PlexGlass.xcodeproj
+open Amp.xcodeproj
 ```
 
 Set your signing team in Xcode, then run on an iOS 26 simulator/device.
@@ -120,7 +120,7 @@ There is no CI here yet. On a Mac, the minimum check is a successful build:
 
 ```sh
 xcodegen generate
-xcodebuild -project PlexGlass.xcodeproj -scheme PlexGlass \
+xcodebuild -project Amp.xcodeproj -scheme Amp \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 ```
 

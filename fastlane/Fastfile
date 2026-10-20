@@ -4,7 +4,7 @@ platform :ios do
   desc "Capture App Store screenshots on iOS 26 simulators"
   lane :screenshots do
     capture_screenshots(
-      scheme: "PlexGlassUITests",
+      scheme: "AmpUITests",
       devices: [
         "iPhone 17 Pro",
         "iPad Pro 13-inch (M4)"

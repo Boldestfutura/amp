@@ -1,4 +1,4 @@
-name: PlexGlass
+name: Amp
 options:
   bundleIdPrefix: com.boldestfutura
   deploymentTarget:
@@ -17,18 +17,19 @@ settings:
     GENERATE_INFOPLIST_FILE: YES
 
 targets:
-  PlexGlass:
+  Amp:
     type: application
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: PlexGlass
+      - path: Amp
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.boldestfutura.plexglass
+        PRODUCT_BUNDLE_IDENTIFIER: com.boldestfutura.amp
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
-        INFOPLIST_KEY_CFBundleDisplayName: PlexGlass
+        INFOPLIST_KEY_CFBundleDisplayName: Amp
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
@@ -37,16 +38,16 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
 
-  PlexGlassUITests:
+  AmpUITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: PlexGlassUITests
+      - path: AmpUITests
     dependencies:
-      - target: PlexGlass
+      - target: Amp
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.boldestfutura.plexglass.uitests
-        TEST_TARGET_NAME: PlexGlass
+        PRODUCT_BUNDLE_IDENTIFIER: com.boldestfutura.amp.uitests
+        TEST_TARGET_NAME: Amp
 

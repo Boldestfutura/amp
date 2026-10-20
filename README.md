@@ -1,11 +1,13 @@
-# PlexGlass
+# Amp
 
 **Version: 0.1.0-beta** · An early beta. Expect rough edges and breaking changes.
 
 A native **iOS 26 / iPadOS 26** music client for your Plex library, built with SwiftUI and
 Apple's native **Liquid Glass** design language. Universal: iPhone and iPad.
 
-> This is an independent client that talks to your own Plex Media Server through the
+<img src="Amp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" width="120" alt="Amp icon">
+
+> Amp is an independent client that talks to your own Plex Media Server through the
 > official Plex API. It is not affiliated with or derived from Plexamp or Plex, Inc.
 
 ## Status (0.1.0 beta)
@@ -35,13 +37,12 @@ This project is generated with [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 ```sh
 brew install xcodegen
 xcodegen generate
-open PlexGlass.xcodeproj
+open Amp.xcodeproj
 ```
 
 Then set your signing team in Xcode and run on an iOS 26 device or simulator.
 
 ## Screenshots
-
 Screenshots are produced by your Mac (this repo's CI/dev machine is Linux and cannot run
 the simulator). See [`Screenshots/README.md`](Screenshots/README.md) and the
 `fastlane` `screenshots` lane:
@@ -50,6 +51,18 @@ the simulator). See [`Screenshots/README.md`](Screenshots/README.md) and the
 bundle install
 bundle exec fastlane screenshots
 ```
+
+## App icon
+
+The icon is an original design (a bold ampersand on a squircle gradient) generated
+reproducibly:
+
+```sh
+python3 tools/make_icon.py
+# writes tools/AppIcon-1024.png — copy into the asset catalog
+```
+
+Final asset lives at `Amp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`.
 
 ## Versioning
 

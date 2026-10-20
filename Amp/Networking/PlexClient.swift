@@ -19,7 +19,7 @@ enum PlexError: LocalizedError {
 @MainActor
 @Observable
 final class PlexClient {
-    static let clientIdentifier = "plex-glass-ios"
+    static let clientIdentifier = "amp-ios"
 
     private(set) var server: PlexServer?
 
@@ -44,7 +44,7 @@ final class PlexClient {
             base: URL(string: "https://plex.tv")!,
             headers: [
                 "X-Plex-Client-Identifier": Self.clientIdentifier,
-                "X-Plex-Product": "PlexGlass",
+                "X-Plex-Product": "Amp",
                 "Accept": "application/json",
             ],
             authorized: false

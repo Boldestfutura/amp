@@ -8,8 +8,8 @@ final class SessionStore {
     private(set) var server: PlexServer?
     private(set) var isAuthenticated = false
 
-    private let serverKey = "plexglass.server"
-    private let tokenKey = "plexglass.token"
+    private let serverKey = "amp.server"
+    private let tokenKey = "amp.token"
 
     init() {
         restore()

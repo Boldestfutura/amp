@@ -2,7 +2,7 @@ import XCTest
 
 /// Snapshot UI tests. Run via `fastlane screenshots` on a Mac with iOS 26 simulators.
 /// These tests drive the app with a mock/demo server so screenshots are deterministic.
-final class PlexGlassSnapshotTests: XCTestCase {
+final class AmpSnapshotTests: XCTestCase {
     var app: XCUIApplication!
 
     override func setUpWithError() throws {
