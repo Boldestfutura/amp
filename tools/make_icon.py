@@ -26,7 +26,7 @@ Design intent (Liquid Glass):
 
 No third-party app artwork is used or copied.
 """
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import json
 import os
 
@@ -223,9 +223,21 @@ def write_icon_package():
 
 
 def write_legacy_png():
-    """Flattened preview approximating the Liquid Glass look for the asset catalog."""
+    """Flattened, self-contained render for the asset catalog and GitHub.
+
+    Unlike the .icon layers (which stay flat so Icon Composer can style them),
+    this file ships as a plain image, so it bakes its own depth: a radial
+    background glow, a dimensional record disc with a rim light, a soft drop
+    shadow under the ampersand, and a glossy top highlight.
+    """
     os.makedirs(LEGACY_DIR, exist_ok=True)
 
+    def shift(mask, dx, dy):
+        return mask.transform(
+            (W, W), Image.AFFINE, (1, 0, -dx, 0, 1, -dy)
+        )
+
+    # --- Background: vertical gradient + radial glow behind the mark --------
     base = Image.new("RGBA", (W, W))
     px = base.load()
     for y in range(W):
@@ -236,16 +248,53 @@ def write_legacy_png():
         for x in range(W):
             px[x, y] = (r, g, b, 255)
 
-    disc = _flat_from_mask(disc_mask(), WHITE_8)
-    disc.putalpha(disc.split()[3].point(lambda v: int(v * 0.30)))
+    glow = Image.new("L", (W, W), 0)
+    ImageDraw.Draw(glow).ellipse(
+        [W * 0.20, W * 0.10, W * 0.80, W * 0.70], fill=90
+    )
+    glow = glow.filter(ImageFilter.GaussianBlur(W * 0.14))
+    tint = Image.new("RGBA", (W, W), (255, 236, 250, 0))
+    tint.putalpha(glow)
+    base = Image.alpha_composite(base, tint)
+
+    # --- Record disc: translucent panel with rim light ----------------------
+    d_mask = disc_mask()
+    disc = Image.new("RGBA", (W, W), (255, 255, 255, 0))
+    disc.putalpha(d_mask.point(lambda v: int(v * 0.16)))
     base = Image.alpha_composite(base, disc)
 
-    ring = _flat_from_mask(ring_mask(), WHITE_8)
-    ring.putalpha(ring.split()[3].point(lambda v: int(v * 0.55)))
-    base = Image.alpha_composite(base, ring)
+    # rim: thin bright edge along the top of the disc
+    rim = Image.new("L", (W, W), 0)
+    ImageDraw.Draw(rim).ellipse(
+        [W * 0.13, W * 0.13, W * 0.87, W * 0.87], outline=255, width=int(W * 0.006)
+    )
+    rim = rim.filter(ImageFilter.GaussianBlur(W * 0.002))
+    rim_img = Image.new("RGBA", (W, W), (255, 255, 255, 0))
+    rim_img.putalpha(rim.point(lambda v: int(v * 0.35)))
+    base = Image.alpha_composite(base, rim_img)
 
-    base = Image.alpha_composite(base, _flat_from_mask(glyph_mask("&"), WHITE_8))
+    # groove rings
+    groove = _flat_from_mask(ring_mask(0.60, 0.006), WHITE_8)
+    groove.putalpha(groove.getchannel("A").point(lambda v: int(v * 0.45)))
+    base = Image.alpha_composite(base, groove)
+    groove2 = _flat_from_mask(ring_mask(0.68, 0.004), WHITE_8)
+    groove2.putalpha(groove2.getchannel("A").point(lambda v: int(v * 0.28)))
+    base = Image.alpha_composite(base, groove2)
 
+    # --- Ampersand: soft drop shadow for depth, then the glyph --------------
+    gm = glyph_mask("&")
+    shadow = Image.new("L", (W, W), 0)
+    shadow.paste(gm, (0, 0))
+    shadow = shift(shadow, -int(W * 0.006), int(W * 0.014))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(W * 0.010))
+    sh_img = Image.new("RGBA", (W, W), (12, 6, 30, 0))
+    sh_img.putalpha(shadow.point(lambda v: int(v * 0.45)))
+    base = Image.alpha_composite(base, sh_img)
+
+    glyph = _flat_from_mask(gm, WHITE_8)
+    base = Image.alpha_composite(base, glyph)
+
+    # --- Squircle crop ------------------------------------------------------
     radius = int(W * 0.235)
     mask = Image.new("L", (W, W), 0)
     ImageDraw.Draw(mask).rounded_rectangle(

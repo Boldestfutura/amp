@@ -5,7 +5,7 @@
 A native **iOS 26 / iPadOS 26** music client for your Plex library, built with SwiftUI and
 Apple's native **Liquid Glass** design language. Universal: iPhone and iPad.
 
-<img src="Amp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" width="120" alt="Amp icon">
+<img src="https://raw.githubusercontent.com/Boldestfutura/amp/main/Amp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" width="120" alt="Amp icon">
 
 > Amp is an independent client that talks to your own Plex Media Server through the
 > official Plex API. It is not affiliated with or derived from Plexamp or Plex, Inc.
