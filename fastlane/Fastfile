@@ -1,0 +1,18 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Capture App Store screenshots on iOS 26 simulators"
+  lane :screenshots do
+    capture_screenshots(
+      scheme: "PlexGlassUITests",
+      devices: [
+        "iPhone 17 Pro",
+        "iPad Pro 13-inch (M4)"
+      ],
+      languages: ["en-US"],
+      output_directory: "./Screenshots/output",
+      clear_previous_screenshots: true,
+      concurrent_simulators: false
+    )
+  end
+end
